@@ -1,0 +1,52 @@
+{
+  "redisHost": "192.168.1.202",
+  "redisPort": 6379,
+  "keysSeparator": ":",
+  "sliceEntryFormat": "ENTRY-%d",
+  "root": {
+    "type": "MAP",
+    "children": {
+      "map1": {
+        "type": "MAP",
+        "children": {}
+      },
+      "map2": {
+        "type": "MAP",
+        "children": {
+          "slice1": {
+            "type": "LIST",
+            "children": {
+              "slicenestedmap": {
+                "type": "MAP",
+                "children": {}
+              },
+              "slicenestedslice": {
+                "type": "LIST",
+                "children": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "functions": {
+    "slice": {
+      "levels": [
+        "map2",
+        "slice1"
+      ],
+      "recurse": true,
+      "refs": true,
+      "query": "$[?(@.sliceprop3 == 'sp13')]"
+    },
+    "slice2": {
+      "levels": [
+        "map2",
+        "slice1"
+      ],
+      "recurse": true,
+      "refs": true
+    }
+  }
+}
