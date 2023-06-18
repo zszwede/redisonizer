@@ -1,0 +1,61 @@
+{
+  "prop1": "aaaa",
+  "prop2": "bbbb",
+  "map1": {
+    "mapprop1": "mp1",
+    "mapprop2": "mp2",
+    "mapprop3": "mp3"
+  },
+  "map2": {
+    "m21": "m2p1",
+    "m22": "m2p2",
+    "m23": "m2p3",
+    "m24": "m2p4",
+    "slice1": [
+      {
+        "sliceprop1": "sp11",
+        "sliceprop2": "sp12",
+        "sliceprop3": "sp13",
+        "sliceprop4": "sp14",
+        "slicenestedmap": {
+          "snm1": "snmp11",
+          "snm2": "snmp12",
+          "snm3": "snmp13"
+        },
+        "slicenestedslice": [
+          {
+            "sns1": "snsp11",
+            "sns2": "snsp12",
+            "sns3": "snsp13",
+            "sns4": "snsp14"
+          }
+        ]
+      },
+      {
+        "sliceprop1": "sp21",
+        "sliceprop2": "sp22",
+        "sliceprop3": "sp23",
+        "sliceprop4": "sp24",
+        "slicenestedmap": {
+          "snm1": "snmp21",
+          "snm2": "snmp22",
+          "snm3": "snmp23"
+        },
+        "slicenestedslice": [
+          {
+            "sns1": "snsp211",
+            "sns2": "snsp212",
+            "sns3": "snsp213",
+            "sns4": "snsp214"
+          },
+          {
+            "sns1": "snsp221",
+            "sns2": "snsp222",
+            "sns3": "snsp223",
+            "sns4": "snsp224"
+          }
+        ]
+      }
+    ]
+  }
+}
