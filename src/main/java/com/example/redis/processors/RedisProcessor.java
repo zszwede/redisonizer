@@ -5,7 +5,11 @@ import com.example.redis.config.LookupResult;
 import com.example.redis.config.ProcessorConfig;
 import com.example.redis.config.StructureEntry;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.jayway.jsonpath.JsonPath;
+import io.burt.jmespath.Expression;
+import io.burt.jmespath.JmesPath;
+import io.burt.jmespath.gson.GsonRuntime;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
@@ -130,11 +134,14 @@ public class RedisProcessor {
         lr.setKeys(new ArrayList<>());
         GetPathKeys(id, processorConfig.getRoot(), new LinkedList<>(fn.getLevels()), lr);
         List<Object> result = lr.getKeys().stream().map(k -> GetObject2(k, lr.getTargetStructure(), fn.isRecurse(), fn.isRefs())).collect(Collectors.toList());
-        if(fn.getQuery() != null){
-            result = JsonPath.read(result, fn.getQuery());
-        }
-        if (result.size() == 1){
-            return gson.toJson(result.get(0));
+        if(fn.getJsonpathquery() != null){
+            result = JsonPath.read(result, fn.getJsonpathquery());
+        } else if (fn.getJmespathquery() != null) {
+            JmesPath<JsonElement> jmespath = new GsonRuntime();
+            JsonElement jsonTree = new Gson().toJsonTree(result);
+            Expression<JsonElement> expression = jmespath.compile(fn.getJmespathquery());
+            JsonElement output = expression.search(jsonTree);
+            return gson.toJson(output);
         }
         return gson.toJson(result);
     }
@@ -244,6 +251,24 @@ public class RedisProcessor {
             return getStructureForLevels(found, levels);
         }else{
             return null;
+        }
+    }
+
+    public void getRootStructureFromMap(Map<String, Object> obj, StructureEntry parent){
+        parent.setChildren(new HashMap<>());
+        for (Map.Entry<String, Object> entry : obj.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                StructureEntry child = new StructureEntry();
+                child.setType(ProcessorConfig.STRUCTURE_TYPE_MAP);
+                getRootStructureFromMap((Map<String, Object>) entry.getValue(), child);
+                parent.getChildren().put(entry.getKey(), child);
+            } else if (entry.getValue() instanceof List) {
+                StructureEntry child = new StructureEntry();
+                child.setType(ProcessorConfig.STRUCTURE_TYPE_LIST);
+                List<Map<String, Object>> l = (List<Map<String, Object>>) entry.getValue();
+                getRootStructureFromMap(l.get(0), child);
+                parent.getChildren().put(entry.getKey(), child);
+            }
         }
     }
 

@@ -7,7 +7,8 @@ import java.util.ArrayList;
 @Data
 public class Function {
     ArrayList<String> levels;
-    String query;
+    String jsonpathquery;
+    String jmespathquery;
     boolean recurse;
     boolean refs;
 }

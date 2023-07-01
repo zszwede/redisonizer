@@ -1,9 +1,14 @@
 package com.example.redis.processors;
 
 import com.example.redis.config.LookupResult;
+import com.example.redis.config.ProcessorConfig;
 import com.example.redis.config.StructureEntry;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.jayway.jsonpath.JsonPath;
+import io.burt.jmespath.Expression;
+import io.burt.jmespath.JmesPath;
+import io.burt.jmespath.gson.GsonRuntime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +25,47 @@ public class ProcessorTest {
     private RedisProcessor rp;
 
     @Test
+    public void TestJMESPath(){
+        JmesPath<JsonElement> jmespath = new GsonRuntime();
+        LinkedList<String> ll = new LinkedList<>();
+        ll.add("map2");
+        ll.add("slice1");
+        LookupResult lr = new LookupResult();
+        lr.setKeys(new LinkedList<>());
+        rp.GetPathKeys("AAAA",rp.processorConfig.getRoot(), ll, lr);
+        List<Map<String,Object>> entries = new ArrayList<>();
+        for (String key : lr.getKeys()) {
+            Map<String, Object> result = rp.GetObject2(key, lr.getTargetStructure(), true, false);
+            entries.add(result);
+        }
+        JsonElement jsonTree = new Gson().toJsonTree(entries);
+        Expression<JsonElement> expression = jmespath.compile("[?sliceprop1 == 'sp21']");
+        JsonElement output = expression.search(jsonTree);
+        System.out.println(new Gson().toJson(output));
+    }
+
+    @Test
     public void PopulatePayloadTest() throws Exception{
         Path path = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("payload.json")).toURI());
         byte[] bytes = Files.readAllBytes(path);
         Map<String,Object> obj = new Gson().fromJson(new String(bytes), Map.class);
         rp.PopulatePayload("AAAA", obj);
     }
+
+    @Test
+    public void GetConfig() throws Exception{
+        Path path = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("payload.json")).toURI());
+        byte[] bytes = Files.readAllBytes(path);
+        Map<String,Object> obj = new Gson().fromJson(new String(bytes), Map.class);
+        StructureEntry se = new StructureEntry();
+        se.setType(ProcessorConfig.STRUCTURE_TYPE_MAP);
+        rp.getRootStructureFromMap(obj, se);
+        Map<String, Object> output = new HashMap<>();
+        output.put("root", se);
+        String json = new Gson().toJson(output);
+        System.out.println(json);
+    }
+
 
     @Test
     public void Evict(){

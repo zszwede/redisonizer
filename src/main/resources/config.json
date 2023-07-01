@@ -30,6 +30,33 @@
       }
     }
   },
+  "xxx" : {
+    "type": "MAP",
+    "children": {
+      "map1": {
+        "type": "MAP",
+        "children": {}
+      },
+      "map2": {
+        "type": "MAP",
+        "children": {
+          "slice1": {
+            "type": "LIST",
+            "children": {
+              "slicenestedmap": {
+                "type": "MAP",
+                "children": {}
+              },
+              "slicenestedslice": {
+                "type": "LIST",
+                "children": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "functions": {
     "slice": {
       "levels": [
@@ -38,7 +65,7 @@
       ],
       "recurse": true,
       "refs": true,
-      "query": "$[?(@.sliceprop3 == 'sp13')]"
+      "jsonpathquery": "$[?(@.sliceprop3 == 'sp13')]"
     },
     "slice2": {
       "levels": [
@@ -46,7 +73,8 @@
         "slice1"
       ],
       "recurse": true,
-      "refs": true
+      "refs": true,
+      "jmespathquery" : "[?sliceprop1 == 'sp21']"
     }
   }
 }
